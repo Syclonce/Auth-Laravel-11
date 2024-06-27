@@ -5,7 +5,8 @@
 /public/storage
 /storage/*.key
 /vendor
-.env
+.vscode
+# .env
 .env.backup
 .env.production
 .phpunit.result.cache
@@ -17,3 +18,6 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+/.idx
+node_modules
+node_modules
