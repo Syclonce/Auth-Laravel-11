@@ -8,6 +8,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\DB;
+
 
 class AuthenticatedSessionController extends Controller
 {
@@ -25,20 +27,27 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
-
         $request->session()->regenerate();
 
-        if (Auth::user()->hasRole('Admin')) {
-            return redirect()->to('admin');
-        }
-        if (Auth::user()->hasRole('PKB')) {
-            return redirect()->to('superadmin');
-        }
-        if (Auth::user()->hasRole('User')) {
-            return redirect()->to('user');
+        $user = Auth::user();
+        $roleIds = $user->roles->pluck('id'); // Ambil semua ID peran pengguna
+
+        $redirectRoute = null;
+
+        foreach ($roleIds as $roleId) {
+            // Ambil rute pengalihan berdasarkan role_id
+            $redirectRoute = DB::table('role_redirects')
+                ->where('role_id', $roleId)
+                ->value('redirect_route');
+
+            if ($redirectRoute) {
+                break; // Hentikan loop jika sudah menemukan rute pengalihan
+            }
         }
 
-        //return redirect()->intended(route('dashboard', absolute: false));
+        if ($redirectRoute) {
+            return redirect()->route($redirectRoute);
+        }
     }
 
     /**

@@ -23,7 +23,7 @@ Route::middleware('auth')->group(function () {
 
 
 
-Route::middleware(['auth', 'verified', 'role:PKB'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:Super-Admin'])->group(function () {
     Route::get('/superadmin', [SuperAdminController::class, 'index'])->name('superadmin');
 
 
